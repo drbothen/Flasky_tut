@@ -1,4 +1,8 @@
-from app import db
+"""
+This module defines our database and table relationships
+"""
+
+from app import db  # imports our db (SQLAlchemy) object from our app (__init__)
 
 
 class User(db.Model):

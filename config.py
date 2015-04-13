@@ -1,10 +1,13 @@
+"""
+This file is the main configuration file for the application. This will set all the static configurations
+"""
+
 import os
 
-#Web App Configuration File
+# Web App Configuration File
 
-WTF_CSRF_ENABLED = True
-SECRET_KEY = 'you-will-never-guess'
-
+WTF_CSRF_ENABLED = True  # Enables cross site scripting protection
+SECRET_KEY = 'you-will-never-guess'  # This is required when CSRF is enabled (Should be changed to a more secure key)
 
 OPENID_PROVIDERS = [
     {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},
@@ -14,14 +17,12 @@ OPENID_PROVIDERS = [
     {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'}
 ]
 
-
-
-#Database Config File
+# Database Config File
 database_type = 'sqlite:///'
 database_name = 'app.db'
 db_migrate_repo = 'db_repository'
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__))  # defines that base directory (Where the file is located)
 
-SQLALCHEMY_DATABASE_URI = database_type + os.path.join(basedir, database_name)
-SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, db_migrate_repo)
+SQLALCHEMY_DATABASE_URI = database_type + os.path.join(basedir, database_name)  # sets the SQL uri for SQLAlchemy
+SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, db_migrate_repo)  # Sets the location of the migrate repo
