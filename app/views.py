@@ -77,6 +77,22 @@ def logout():
     return redirect(url_for('index'))  # Then redirects back to the index page
 
 
+@app.route('/user/<nickname>')  # <nickname> is an argument
+@login_required
+def user(nickname):
+    user = User.query.filter_by(nickname).first()
+    if user is None:
+        flash('User {nickname} not found.'.format(nickname=nickname))
+        return redirect(url_for('index'))
+    posts = [
+        {'author': user, 'body': 'Test post #1'},
+        {'author': user, 'body': 'Test post #1'}
+    ]
+    return render_template('user.html',
+                           user=user,
+                           posts=posts)
+
+
 @lm.user_loader
 def load_user(id):  # this function is registered with the lm using the decorator. this will be used to load a user
     return User.query.get(int(id))  # loads user from the database
