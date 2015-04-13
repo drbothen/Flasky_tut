@@ -71,6 +71,12 @@ def after_login(resp):  # this is called after the login attempt. resp variable 
     return redirect(request.args.get('next') or url_for('index'))  # return to the page the user asked for or index
 
 
+@app.route('/logout')  # Route added for user log outs
+def logout():
+    logout_user()  # Calls the logout_user function to log the user out of the app
+    return redirect(url_for('index'))  # Then redirects back to the index page
+
+
 @lm.user_loader
 def load_user(id):  # this function is registered with the lm using the decorator. this will be used to load a user
     return User.query.get(int(id))  # loads user from the database
