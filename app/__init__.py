@@ -10,5 +10,6 @@ app.config.from_object('config')  # tells flask what the name of our config file
 db = SQLAlchemy(app)  # Creates a SQLAlchemy Database object
 lm = LoginManager()  # Create a loginmanager instance
 lm.init_app(app)  # initialize with the name of our flask app
+lm.login_view = 'login'  # tells flask login manager where our login page is
 oid = OpenID(app, os.path.join(basedir, 'tmp'))  # initialize OpenID and tell it where it should store its temp files
 from app import views, models
