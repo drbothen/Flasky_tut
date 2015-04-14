@@ -3,7 +3,7 @@ This module defines our database and table relationships
 """
 
 from app import db  # imports our db (SQLAlchemy) object from our app (__init__)
-
+from hashlib import md5
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Creates a primary key, integer column named ID
@@ -25,6 +25,14 @@ class User(db.Model):
     defines an object that will be added to the many side that points back at the 'one' side. we can now use post.author
     to get the user instance that created a post
     """
+    about_me = db.Column(db.String(140))
+    """
+    Creates a Column called about_me with type string, length 140
+    """
+    last_seen = db.Column(db.DateTime)
+    """
+    Creates a Column called last_seen with type date
+    """
 
     def is_authenticated(self):  # needed by Flask_Login
         return True
@@ -40,6 +48,9 @@ class User(db.Model):
             return unicode(self.id)  # python 2
         except NameError:
             return str(self.id)  # python 3
+
+    def avatar(self, size):
+        return 'http://www.gravatar.com/avatar/{MD5}?d=mm&s={size}'.format(MD5=md5(self.email.encode('utf-8')).hexdigest(), size=size)
 
     def __repr__(self):
         return '<User {nickname}>'.format(nickname=self.nickname)

@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
 from .forms import LoginForm
 from .models import User
+from datetime import datetime
 
 @app.route('/')
 @app.route('/index')
@@ -80,7 +81,7 @@ def logout():
 @app.route('/user/<nickname>')  # <nickname> is an argument
 @login_required
 def user(nickname):
-    user = User.query.filter_by(nickname).first()  # Takes the <nickname> argument and performs a database query
+    user = User.query.filter_by(nickname=nickname).first()  # Takes the <nickname> argument and performs a database query
     if user is None:  # Checks to See if the nickname actually exists
         flash('User {nickname} not found.'.format(nickname=nickname))  # shows an error if nickname does not exist
         return redirect(url_for('index'))  # redirects to the index page
@@ -101,3 +102,7 @@ def load_user(id):  # this function is registered with the lm using the decorato
 @app.before_request  # this will cause this function to run before the view func each time a request is received
 def before_request():
     g.user = current_user  # this allows all requests to have access to the logged in user. g is shared between requests
+    if g.user.is_authenticated():
+        g.user.last_seen = datetime.utcnow()
+        db.session.add(g.user)
+        db.session.commit()

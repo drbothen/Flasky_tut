@@ -13,6 +13,8 @@
              to build the url itself using url_for(template) -->
             {% if g.user.is_authenticated() %}  <!-- Checks to see if the user is logged in. if so display the following
             button -->
+            | <a href="{{ url_for('user', nickname=g.user.nickname) }}">Your Profile</a>  <!-- this is displayed if the
+             is user is logged in. This links to their profile page -->
             | <a href="{{ url_for('logout') }}">Logout</a>  <!-- this is displayed if the user is logged in. the button
              if rendered and the url_for calls the logout route in views that runs a function to log the user out-->
             {% endif %}  <!-- end if -->
