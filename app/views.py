@@ -80,17 +80,17 @@ def logout():
 @app.route('/user/<nickname>')  # <nickname> is an argument
 @login_required
 def user(nickname):
-    user = User.query.filter_by(nickname).first()
-    if user is None:
-        flash('User {nickname} not found.'.format(nickname=nickname))
-        return redirect(url_for('index'))
-    posts = [
+    user = User.query.filter_by(nickname).first()  # Takes the <nickname> argument and performs a database query
+    if user is None:  # Checks to See if the nickname actually exists
+        flash('User {nickname} not found.'.format(nickname=nickname))  # shows an error if nickname does not exist
+        return redirect(url_for('index'))  # redirects to the index page
+    posts = [  # Test Posts
         {'author': user, 'body': 'Test post #1'},
         {'author': user, 'body': 'Test post #1'}
     ]
-    return render_template('user.html',
-                           user=user,
-                           posts=posts)
+    return render_template('user.html',  # Renders the user template
+                           user=user,  # assigns our user variable to our user for use in our template
+                           posts=posts)  # assigns our posts variable for use in our template
 
 
 @lm.user_loader

@@ -1,7 +1,9 @@
-{% extends "base.html" %}
-{% block content %}
-    <h1>Hello, {{ user.nickname }}!</h1>
-    {% for post in posts %}
-    <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p></div>
-    {% endfor %}
-{% endblock %}
+{% extends "base.html" %}  <!-- designates that this is an extension of the base template 'base' -->
+{% block content %} <!-- tells the template where to insert this template with the base -->
+    <h1>Hello, {{ user.nickname }}!</h1>  <!-- displays username for the currently logged in user. This is assigned by
+     the g.user variable -->
+    {% for post in posts %}  <!-- for loop to loop through all the posts past by the post variable. -->
+    <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p></div>  <!-- defines the style to display posts
+     -->
+    {% endfor %}  <!-- end for loop -->
+{% endblock %} <!-- end block section -->

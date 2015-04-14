@@ -1,33 +1,36 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %}  <!-- tells this template that it extends the 'base' template  -->
+{% block content %}  <!-- tells this template where it should add its content to the base -->
 <script type="text/javascript">
-function set_openid(openid, pr)
+function set_openid(openid, pr) // set_openid takes pr.url = openid and pr.name = pr
 {
-    u = openid.search('<username>')
-    if (u != -1) {
+    var u = openid.search('<username>');  // searches openid (pr.url) for <username>
+    if (u != -1) {  // if found prompt for username
         // openid requires username
-        user = prompt('Enter your ' + pr + ' username:')
-        openid = openid.substr(0, u) + user
+        var user = prompt('Enter your ' + pr + ' username:')  // Prompt for a username. pr is the name of provider
+        openid = openid.substr(0, u) + user // substitutes <username> with user input from above
     }
-    form = document.forms['login'];
-    form.elements['openid'].value = openid
+    var form = document.forms['login'];  // assigns the form 'login' form below to form
+    form.elements['openid'].value = openid  // inserts the url into the form at form.openid
 }
 </script>
 <h1>Sign In</h1>
-<form action="" method="post" name="login">
-    {{ form.hidden_tag() }}
+<form action="" method="post" name="login">  <!-- designates this section as a form. This section expects to have a form
+ object passed to it in the form of form. Also designates this has a 'post' method -->
+    {{ form.hidden_tag() }}  <!-- used for CSRF prevention -->
     <p>
         Please enter your OpenID, or select one of the providers below:<br>
-        {{ form.openid(size=80) }}
-        {% for error in form.openid.errors %}
-          <span style="color: red;">[{{error}}]</span>
-        {% endfor %}<br>
-        |{% for pr in providers %}
-          <a href="javascript:set_openid('{{ pr.url }}', '{{ pr.name }}');">{{ pr.name }}</a> |
-        {% endfor %}
+        {{ form.openid(size=80) }}  <!-- designates a field. field names are in the format of form.field_name. this has
+        a length of size 80 -->
+        {% for error in form.openid.errors %}  <!-- errors are stored in openid.errors. for loop loops through them and
+         displays them below. forms with validators attached will have .errors -->
+          <span style="color: red;">[{{error}}]</span> <!-- how errors are displayed -->
+        {% endfor %}<br> <!-- end of for loop -->
+        |{% for pr in providers %}  <!-- loops through the providers array and generates a menu -->
+          <a href="javascript:set_openid('{{ pr.url }}', '{{ pr.name }}');">{{ pr.name }}</a> |  <!-- sets the style of
+          the link menu as well as assigns a javascript object to be called when clicked -->
+        {% endfor %}  <!-- end for loop -->
     </p>
-    <p>{{ form.remember_me }} Remember Me</p>
-    <p><input type="submit" value="Sign In"></p>
+    <p>{{ form.remember_me }} Remember Me</p>  <!-- sets the boolean (True/False) and stores it in remember_me -->
+    <p><input type="submit" value="Sign In"></p>  <!-- submit button to pass the information to the backend -->
 </form>
 {% endblock %}

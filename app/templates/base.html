@@ -1,28 +1,33 @@
+<!-- This is the base template for all templates. This template defines the navigation bar -->
 <html>
     <head>
-        {% if title %}
-        <title>{{ title }} - microblog </title>
-        {% else %}
-        <title>Welcome to microblog</title>
-        {% endif %}
+        {% if title %}  <!-- Looks to see if title variable has been assigned -->
+        <title>{{ title }} - microblog </title>  <!-- if title has been provided, assign title-->
+        {% else %}  <!-- else statement -->
+        <title>Welcome to microblog</title>  <!-- if title has not been provided assign default title -->
+        {% endif %}  <!-- end if -->
     </head>
     <body>
         <div>Microblog:
-            <a href="{{ url_for('index') }}">Home</a>
-            {% if g.user.is_authenticated() %}
-            | <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
+            <a href="{{ url_for('index') }}">Home</a>  <!-- defines the link for the Home button. this allows flask
+             to build the url itself using url_for(template) -->
+            {% if g.user.is_authenticated() %}  <!-- Checks to see if the user is logged in. if so display the following
+            button -->
+            | <a href="{{ url_for('logout') }}">Logout</a>  <!-- this is displayed if the user is logged in. the button
+             if rendered and the url_for calls the logout route in views that runs a function to log the user out-->
+            {% endif %}  <!-- end if -->
         </div>
         <hr>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
+        {% with messages = get_flashed_messages() %}  <!-- This retrieves any flashed() messages -->
+            {% if messages %}  <!-- if there are messages -->
                 <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
+                {% for message in messages %}  <!-- for loop, loops over all the messages and creates a list of
+                messages -->
+                    <li>{{ message }}</li>  <!-- message display format -->
+                {% endfor %}  <!-- end for loop -->
                 </ul>
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
+            {% endif %}  <!-- end if -->
+        {% endwith %}  <!-- end with -->
+        {% block content %}{% endblock %}  <!-- block holder for blocks labeled content -->
     </body>
 </html>
