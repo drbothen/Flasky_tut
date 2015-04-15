@@ -9,7 +9,7 @@ import os
 WTF_CSRF_ENABLED = True  # Enables cross site scripting protection
 SECRET_KEY = 'you-will-never-guess'  # This is required when CSRF is enabled (Should be changed to a more secure key)
 
-OPENID_PROVIDERS = [
+OPENID_PROVIDERS = [  # defines a list of dicts (array) of openid providers
     {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},
     {'name': 'Yahoo', 'url': 'https://me.yahoo.com'},
     {'name': 'AOL', 'url': 'http://openid.aol.com/<username>'},
@@ -26,3 +26,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))  # defines that base direct
 
 SQLALCHEMY_DATABASE_URI = database_type + os.path.join(basedir, database_name)  # sets the SQL uri for SQLAlchemy
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, db_migrate_repo)  # Sets the location of the migrate repo
+
+# mail server settings
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
+
+# administrators list
+ADMINS = ['you@example.com']
+
+
