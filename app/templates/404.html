@@ -1,0 +1,7 @@
+{% extends "base.html" %}  <!-- extends the base template -->
+
+{% block content %}  <!-- defines where the template will be inserted -->
+    <h1>File Not Found</h1>
+    <p><a href="{{ url_for('index') }}">Back</a></p>  <!-- defines a back button link using the url_for method to allow
+    flask to create the link dynamically vs manual creation -->
+{% endblock %}  <!-- end of the content block -->

@@ -1,0 +1,8 @@
+{% extends "base.html" %}  <!-- extends the base template -->
+
+{% block content %}  <!-- defines where to insert this template in the base template -->
+    <h1>An unexpected error has occurred</h1>
+    <p>The Administrator has been notified. Sorry for the inconvenience!</p>
+    <p><a href="{{ url_for('index') }}">Back</a></p>  <!-- defines a back button link using the url_for method to allow
+    flask to create the link dynamically vs manual creation -->
+{% endblock %}  <!-- end of the content block -->

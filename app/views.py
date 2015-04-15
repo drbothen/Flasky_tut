@@ -110,6 +110,16 @@ def edit():
         form.about_me.data = g.user.about_me  # load data that is currently in g.user.about_me into about_me field
     return render_template('edit.html', form=form)  # render the page using the form EditForm
 
+
+@app.errorhandler(404)  # error handler for 404 'Not Found' error
+def not_found_error(error):  # function for handling 404 errors
+    return render_template('404.html'), 404  # Defines the template to use for 404 errors
+
+@app.errorhandler(500)  # error handler for 500 'Internal Server error' error
+def internal_error(error):  # function for handling 500 errors
+    db.session.rollback()  # roll back database for a working session
+    return render_template('500.html'), 500  # Defines the template to use for 500 errors
+
 @lm.user_loader
 def load_user(id):  # this function is registered with the lm using the decorator. this will be used to load a user
     return User.query.get(int(id))  # loads user from the database
