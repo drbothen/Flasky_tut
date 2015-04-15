@@ -22,3 +22,4 @@ class EditForm(Form):  # this class details the form used for editing user profi
     """
     this field allows users to add information about themselves
     """
+

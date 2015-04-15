@@ -1,0 +1,24 @@
+{% extends 'base.html' %}  <!-- extends the base layout -->
+
+{% block content %}  <!-- defines where this content will be displayed in the base layout -->
+    <h1>Edit Your Profile</h1>
+    <form action="" method="post" name="edit">  <!-- defines the form. requires method post -->
+        {{ form.hidden_tag() }}  <!-- used for CSRF prevention -->
+        <table>
+            <tr>
+                <td>Your nickname:</td>
+                <td>{{ form.nickname(size=24) }}</td>  <!-- place holder for the nickname field. defines the size of
+                 the field -->
+            </tr>
+            <tr>
+                <td>About yourself:</td>
+                <td>{{ form.about_me(cols=32, rows=4) }}</td>  <!-- place holder for the about_me field. defines the
+                size in columns and rows -->
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Save Changes"></td>  <!-- defines a button with type submit -->
+            </tr>
+        </table>
+    </form>
+{% endblock %}  <!-- end of content block -->

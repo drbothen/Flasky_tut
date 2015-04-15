@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from .forms import LoginForm
+from .forms import LoginForm, EditForm
 from .models import User
 from datetime import datetime
 
@@ -93,6 +93,22 @@ def user(nickname):
                            user=user,  # assigns our user variable to our user for use in our template
                            posts=posts)  # assigns our posts variable for use in our template
 
+
+@app.route('/edit', methods=['GET', 'POST'])  # edit.html has a form and there for needs methods GET and POST
+@login_required  # Requires user to be logged in to view this page
+def edit():
+    form = EditForm()  # form equals our EditForm that we defined in our forms.py
+    if form.validate_on_submit():  # validators our form data with the validators attached to the form
+        g.user.nickname = form.nickname.data  # g.user.nickname = what was typed into the nickname field
+        g.user.about_me = form.about_me.data  # g.user.about_me = what was typed into the about_me field
+        db.session.add(g.user)  # add the data entered to the db session
+        db.session.commit()  # commit the data to the database
+        flash('Your changes have been saved.')  # display message that the changes where saved
+        return redirect(url_for('edit'))  # redirect back to the edit page
+    else:
+        form.nickname.data = g.user.nickname  # load data that is currently in g.user.nickname into nickname field
+        form.about_me.data = g.user.about_me  # load data that is currently in g.user.about_me into about_me field
+    return render_template('edit.html', form=form)  # render the page using the form EditForm
 
 @lm.user_loader
 def load_user(id):  # this function is registered with the lm using the decorator. this will be used to load a user
