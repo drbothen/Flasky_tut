@@ -65,3 +65,6 @@ db_repository/
 
 # PyCharm
 .idea
+
+# tmp folder
+tmp/

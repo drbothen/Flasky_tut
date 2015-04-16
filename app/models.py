@@ -52,6 +52,18 @@ class User(db.Model):
     def avatar(self, size):
         return 'http://www.gravatar.com/avatar/{MD5}?d=mm&s={size}'.format(MD5=md5(self.email.encode('utf-8')).hexdigest(), size=size)
 
+    @staticmethod  # staticmethods are used when a func does not apply to a single instance of the class
+    def make_unique_nickname(nickname):  # makes unique nicknames
+        if User.query.filter_by(nickname=nickname).first() is None:  # Checks to see if nickname in database
+            return nickname  # if not return nickname
+        version = 2  # initialize variable
+        while True:  # loop to continue running checking nicknames
+            new_nickname = nickname + str(version)  # add version variable to nickname
+            if User.query.filter_by(nickname=new_nickname).first() is None:  # check database for new nickname
+                break  # if not found break away from loop
+            version += 1  # if found add 1 to version and repeat above
+        return new_nickname  # once a nickname is found to be unique, return nickname
+
     def __repr__(self):
         return '<User {nickname}>'.format(nickname=self.nickname)
     """

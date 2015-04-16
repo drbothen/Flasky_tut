@@ -61,6 +61,7 @@ def after_login(resp):  # this is called after the login attempt. resp variable 
         nickname = resp.nickname  # store the nickname value
         if nickname is None or nickname == "":  # if no nickname is provided. create one from the email
             nickname = resp.email.split('@')[0]  # section before the @ will be the users nickname
+        nickname = User.make_unique_nickname(nickname)
         user = User(nickname=nickname, email=resp.email)  # Create a new user in database
         db.session.add(user)  # add new user to db session
         db.session.commit()  # commit changes
@@ -97,7 +98,7 @@ def user(nickname):
 @app.route('/edit', methods=['GET', 'POST'])  # edit.html has a form and there for needs methods GET and POST
 @login_required  # Requires user to be logged in to view this page
 def edit():
-    form = EditForm()  # form equals our EditForm that we defined in our forms.py
+    form = EditForm(g.user.nickname)  # form equals our EditForm that we defined in our forms.py
     if form.validate_on_submit():  # validators our form data with the validators attached to the form
         g.user.nickname = form.nickname.data  # g.user.nickname = what was typed into the nickname field
         g.user.about_me = form.about_me.data  # g.user.about_me = what was typed into the about_me field

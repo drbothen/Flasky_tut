@@ -7,8 +7,12 @@
         <table>
             <tr>
                 <td>Your nickname:</td>
-                <td>{{ form.nickname(size=24) }}</td>  <!-- place holder for the nickname field. defines the size of
-                 the field -->
+                <td>
+                    {{ form.nickname(size=24) }}  <!-- place holder for the nickname field. defines the size of the field -->
+                    {%  for error in form.errors.nickname %}  <!-- for loop to loop through any errors for display -->
+                    <br><span style="color: red;">[{{ error }}]</span>  <!-- Displays errors -->
+                    {% endfor %} <!-- end for loop -->
+                </td>
             </tr>
             <tr>
                 <td>About yourself:</td>

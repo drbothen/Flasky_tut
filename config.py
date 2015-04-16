@@ -36,4 +36,9 @@ MAIL_PASSWORD = None
 # administrators list
 ADMINS = ['you@example.com']
 
+# File Logging Settings
 
+FILE_LOG_LOCATION = 'tmp/'
+FILE_LOG_NAME = 'microblog.log'
+
+FILE_LOG = os.path.join(FILE_LOG_LOCATION, FILE_LOG_NAME)  # Do not edit
