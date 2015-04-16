@@ -5,6 +5,9 @@ This module defines our database and table relationships
 from app import db  # imports our db (SQLAlchemy) object from our app (__init__)
 from hashlib import md5
 
+
+# models
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Creates a primary key, integer column named ID
     nickname = db.Column(db.String(64), index=True, unique=True)
@@ -33,6 +36,13 @@ class User(db.Model):
     """
     Creates a Column called last_seen with type date
     """
+    followed = db.relationship('User',  # is the right side entity that is in the relationship
+                               secondary=lambda: followers,  # indicates the association table that is used for this relationship. lambda: allows you to specify the table later
+                               primaryjoin=lambda: (followers.c.follower_id == id),  # indicates the condition that links the left side entity (the follow user) with the association table. because the followers table is not a model we have to use speical syntax
+                               secondaryjoin=lambda: (followers.c.followed_id == id),  # indicates the condition that links the left side entity (the follower user) with the association table.
+                               backref=db.backref('followers', lazy='dynamic'),  # defines how this relationship will be access from the rightside entity. the query will be named followers and will return all the left side users that are linked to the target user in the right side. lazy defines the sql execution mode. dynamic means it wont run until requested. increase SQL performance
+                               lazy='dynamic'  # same as above lazy explanation
+                               )
 
     def is_authenticated(self):  # needed by Flask_Login
         return True
@@ -64,6 +74,19 @@ class User(db.Model):
             version += 1  # if found add 1 to version and repeat above
         return new_nickname  # once a nickname is found to be unique, return nickname
 
+    def follow(self, user):  # add user as follow
+        if not self.is_following(user):  # check to see if your following
+            self.followed.append(user)  # if not append to followed
+            return self
+
+    def unfollow(self, user):  # unfollow a user
+        if self.is_following(user):  # check to see if your following
+            self.followed.remove(user)  # if so remove from followed
+            return self
+
+    def is_following(self, user):  # check to see if you are following
+        return self.followed.filter(followers.c.followed_id == user.id).count() > 0  # sql query to see if a user is being followed
+
     def __repr__(self):
         return '<User {nickname}>'.format(nickname=self.nickname)
     """
@@ -85,3 +108,9 @@ class Post(db.Model):
     """
     defines a method for printing this object
     """
+
+# auxiliary tables
+followers = db.Table('followers',  # defines our many to many relationship
+                     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),  # links fkey to users
+                     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))  # links fkey to users
+                     )
