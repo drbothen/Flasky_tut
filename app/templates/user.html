@@ -16,7 +16,7 @@
                     <a href="{{ url_for('edit') }}">Edit your profile</a>  <!-- display edit button -->
                 {% elif not g.user.is_following(user) %}  <!-- checks if user is following the user -->
                     <a href="{{ url_for('follow', nickname=user.nickname) }}">Follow</a>  <!-- if not display follow button -->
-                {% else %}  <!-- else statement -- >
+                {% else %} <!-- else statement -->
                     <a href="{{ url_for('unfollow', nickname=user.nickname) }}">Unfollow</a>  <!-- if following display unfollow button -->
                 {% endif %}  <!-- end if -->
                 </p>
