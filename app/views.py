@@ -65,6 +65,8 @@ def after_login(resp):  # this is called after the login attempt. resp variable 
         user = User(nickname=nickname, email=resp.email)  # Create a new user in database
         db.session.add(user)  # add new user to db session
         db.session.commit()  # commit changes
+        db.session.add(user.follow(user))  # user is added to follow themselves
+        db.session.commit()  # commit changes
     remember_me = False  # set remember_me value to false incase its not in the session
     if 'remember_me' in session:  # load the remember me value from the session
         remember_me = session['remember_me']  # load value
@@ -116,10 +118,12 @@ def edit():
 def not_found_error(error):  # function for handling 404 errors
     return render_template('404.html'), 404  # Defines the template to use for 404 errors
 
+
 @app.errorhandler(500)  # error handler for 500 'Internal Server error' error
 def internal_error(error):  # function for handling 500 errors
     db.session.rollback()  # roll back database for a working session
     return render_template('500.html'), 500  # Defines the template to use for 500 errors
+
 
 @lm.user_loader
 def load_user(id):  # this function is registered with the lm using the decorator. this will be used to load a user
@@ -133,3 +137,42 @@ def before_request():
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
+
+
+@app.route('/follow/<nickname>')
+@login_required
+def follow(nickname):
+    user = User.query.filter_by(nickname=nickname).first()  # Query database for user
+    if user is None:  # checks if a user was returned
+        flash('User {nickname} not found.'.format(nickname=nickname))  # error message
+        return redirect(url_for('user', nickname=nickname))  # redirect to user page
+    if user == g.user:  # check if user is currently logged in user
+        flash("You can't follow yourself!")  # error message
+        return redirect(url_for('user', nickname=nickname))  # redirect to user page
+    u = g.user.follow(user)  # assign user to follow given user
+    if u is None:  # check to insure u is not none
+        flash('Cannot follow {nickname}.'.format(nickname=nickname))  # error message
+        return redirect(url_for('user', nickname=nickname))  # return to user page
+    db.session.add(u)  # add object to db session
+    db.session.commit()  # commit session
+    flash('You are now following {nickname}!'.format(nickname=nickname))  # confirmation message
+    return redirect(url_for('user', nickname=nickname))  # return to user page
+
+@app.route('/unfollow/<nickname>')
+@login_required
+def unfollow(nickname):
+    user = User.query.filter_by(nickname=nickname).first()  # query database for user
+    if user is None:  # insure user has not be assigned none
+        flash('User {nickname} not found'.format(nickname=nickname))  # error message
+        return redirect(url_for('index'))  # redirect to user page
+    if user == g.user:  # check to insure user does not equal currently logged in user
+        flash("You can't unfollow yourself!")  # error message
+        return redirect(url_for('user', nickname=nickname))  # return to user page
+    u = g.user.unfollow(user)  # execute unfollow func
+    if u is None:  # check to insure none was not returned
+        flash("You can't unfollow {nickname}.".format(nickname=nickname))  # error message
+        return redirect(url_for('user', nickname=nickname))  # return to user page
+    db.session.add(u)  # add to db session
+    db.session.commit() # commit session
+    flash('You have stopped following {nickname}.'.format(nickname=nickname))  # confirmation message
+    return redirect(url_for('user', nickname=nickname))  # redirect to user page

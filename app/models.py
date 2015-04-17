@@ -6,6 +6,12 @@ from app import db  # imports our db (SQLAlchemy) object from our app (__init__)
 from hashlib import md5
 
 
+# auxiliary tables
+followers = db.Table('followers',  # defines our many to many relationship
+                     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),  # links fkey to users
+                     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))  # links fkey to users
+                     )
+
 # models
 
 class User(db.Model):
@@ -37,9 +43,9 @@ class User(db.Model):
     Creates a Column called last_seen with type date
     """
     followed = db.relationship('User',  # is the right side entity that is in the relationship
-                               secondary=lambda: followers,  # indicates the association table that is used for this relationship. lambda: allows you to specify the table later
-                               primaryjoin=lambda: (followers.c.follower_id == id),  # indicates the condition that links the left side entity (the follow user) with the association table. because the followers table is not a model we have to use speical syntax
-                               secondaryjoin=lambda: (followers.c.followed_id == id),  # indicates the condition that links the left side entity (the follower user) with the association table.
+                               secondary=followers,  # indicates the association table that is used for this relationship. lambda: allows you to specify the table later
+                               primaryjoin=(followers.c.follower_id == id),  # indicates the condition that links the left side entity (the follow user) with the association table. because the followers table is not a model we have to use speical syntax
+                               secondaryjoin=(followers.c.followed_id == id),  # indicates the condition that links the left side entity (the follower user) with the association table.
                                backref=db.backref('followers', lazy='dynamic'),  # defines how this relationship will be access from the rightside entity. the query will be named followers and will return all the left side users that are linked to the target user in the right side. lazy defines the sql execution mode. dynamic means it wont run until requested. increase SQL performance
                                lazy='dynamic'  # same as above lazy explanation
                                )
@@ -87,6 +93,11 @@ class User(db.Model):
     def is_following(self, user):  # check to see if you are following
         return self.followed.filter(followers.c.followed_id == user.id).count() > 0  # sql query to see if a user is being followed
 
+    def followed_posts(self):
+        return Post.query.join(followers,
+                               (followers.c.followed_id == Post.user_id)
+                               ).filter(followers.c.follower_id == self.id).order_by(Post.timestamp.desc())
+
     def __repr__(self):
         return '<User {nickname}>'.format(nickname=self.nickname)
     """
@@ -109,8 +120,4 @@ class Post(db.Model):
     defines a method for printing this object
     """
 
-# auxiliary tables
-followers = db.Table('followers',  # defines our many to many relationship
-                     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),  # links fkey to users
-                     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))  # links fkey to users
-                     )
+

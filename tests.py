@@ -2,10 +2,10 @@ __author__ = 'jmagady'
 
 import os
 import unittest
-
+from datetime import datetime, timedelta
 from config import basedir
 from app import app, db
-from app.models import User
+from app.models import User, Post
 
 
 class TestCase(unittest.TestCase):  # holds all of our tests
@@ -40,28 +40,77 @@ class TestCase(unittest.TestCase):  # holds all of our tests
         assert nickname2 != nickname  # check to make sure new nickname does not equal existing
 
     def test_follow(self):
+        u1 = User(nickname='john', email='john@example.com')  # Create user 1
+        u2 = User(nickname='susan', email='susan@example.com')  # Create user 2
+        db.session.add(u1)  # add user 1 to the session
+        db.session.add(u2)  # add user 2 to the session
+        db.session.commit()  # commit the session
+        assert u1.unfollow(u2) is None  # unfollow should return none
+        u = u1.follow(u2)  # set user 1 to following user 2
+        db.session.add(u)  # add to db session
+        db.session.commit()  # commit the session
+        assert u1.follow(u2) is None  # checks to make sure it wont add a user twice
+        assert u1.is_following(u2)  # test is_following
+        assert u1.followed.count() == 1  # should only allow user to be followed once
+        assert u1.followed.first().nickname == 'susan'  # insures john is following susan
+        assert u2.followers.count() == 1  # should only allow user to be followed once
+        assert u2.followers.first().nickname == 'john'  # insures susan is following john
+        u = u1.unfollow(u2)  # set john to unfollow susan
+        assert u is not None  # insure it does not return None
+        db.session.add(u)  # add to session
+        db.session.commit()  # commit session to database
+        assert not u1.is_following(u2)  # check to insure john is not following susan
+        assert u1.followed.count() == 0  # check to insure john is not following anyone
+        assert u2.followers.count() == 0  # check to insure susan has no followers
+
+    def test_follow_posts(self):
+        # make four users
         u1 = User(nickname='john', email='john@example.com')
         u2 = User(nickname='susan', email='susan@example.com')
+        u3 = User(nickname='mary', email='mary@example.com')
+        u4 = User(nickname='david', email='david@example.com')
         db.session.add(u1)
         db.session.add(u2)
+        db.session.add(u3)
+        db.session.add(u4)
+        # make four posts
+        utcnow = datetime.utcnow()
+        p1 = Post(body="post from john", author=u1, timestamp=utcnow + timedelta(seconds=1))
+        p2 = Post(body="post from susan", author=u2, timestamp=utcnow + timedelta(seconds=2))
+        p3 = Post(body="post from mary", author=u3, timestamp=utcnow + timedelta(seconds=3))
+        p4 = Post(body="post from david", author=u4, timestamp=utcnow + timedelta(seconds=4))
+        db.session.add(p1)
+        db.session.add(p2)
+        db.session.add(p3)
+        db.session.add(p4)
         db.session.commit()
-        assert u1.unfollow(u2) is None
-        #u = u1.follow(u2)
-        #db.session.add(u)
-        #db.session.commit()
-        #assert u1.follow(u2) is None
-        #assert u1.is_following(u2)
-        #assert u1.followed.count() == 1
-        #assert u1.followed.first().nickname == 'susan'
-        #assert u2.followers.count() == 1
-        #assert u2.followers.first().nickname == 'john'
-        #u = u1.unfollow(u2)
-        #assert u is not None
-        #db.session.add(u)
-        #db.session.commit()
-        #assert not u1.is_following(u2)
-        #assert u1.followed.count() == 0
-        #assert u2.followers.count() == 0
+        # setup the followers
+        u1.follow(u1)  # john follows himself
+        u1.follow(u2)  # john follows susan
+        u1.follow(u4)  # john follows david
+        u2.follow(u2)  # susan follows herself
+        u2.follow(u3)  # susan follows mary
+        u3.follow(u3)  # mary follows herself
+        u3.follow(u4)  # mary follows david
+        u4.follow(u4)  # david follows himself
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.add(u4)
+        db.session.commit()
+        # check the followed posts of each user
+        f1 = u1.followed_posts().all()
+        f2 = u2.followed_posts().all()
+        f3 = u3.followed_posts().all()
+        f4 = u4.followed_posts().all()
+        assert len(f1) == 3
+        assert len(f2) == 2
+        assert len(f3) == 2
+        assert len(f4) == 1
+        assert f1 == [p4, p2, p1]
+        assert f2 == [p3, p2]
+        assert f3 == [p4, p3]
+        assert f4 == [p4]
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,16 +2,24 @@
 
 {% block content %}  <!-- tells the template engine where this content is displayed -->
     <table>
-        <tr valign="top">
+        <tr valign="top">  <!-- table row -->
             <td><img src="{{ user.avatar(128) }}"></td>  <!-- displays user avatars by calling the avatar method in the
             users Class -->
-            <td>
+            <td>  <!-- table data -->
                 <h1>User: {{ user.nickname }}!</h1>  <!-- displays the username pass in from the user variable -->
                 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}  <!-- checks to see if about_me is set. if
                 so displays the field -->
                 {% if user.last_seen %}<p><i>Last seen on: {{ user.last_seen }}</i></p>{% endif %}  <!-- checks to see
                 if last_seen is set. if so displays the field -->
-                {% if user.id == g.user.id %}<p><a href="{{ url_for('edit') }}">Edit</a></p>{% endif %}
+                <p>{{ user.followers.count() }} followers |  <!-- Count followers -->
+                {% if user.id == g.user.id %}  <!-- if user is logged in user -->
+                    <a href="{{ url_for('edit') }}">Edit your profile</a>  <!-- display edit button -->
+                {% elif not g.user.is_following(user) %}  <!-- checks if user is following the user -->
+                    <a href="{{ url_for('follow', nickname=user.nickname) }}">Follow</a>  <!-- if not display follow button -->
+                {% else %}  <!-- else statement -- >
+                    <a href="{{ url_for('unfollow', nickname=user.nickname) }}">Unfollow</a>  <!-- if following display unfollow button -->
+                {% endif %}  <!-- end if -->
+                </p>
             </td>
         </tr>
     </table>
