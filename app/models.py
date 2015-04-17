@@ -95,10 +95,10 @@ class User(db.Model):
             followers.c.followed_id == user.id).count() > 0  # sql query to see if a user is being followed
 
     def followed_posts(self):
-        return Post.query.join(
-            followers, (followers.c.followed_id == Post.user_id)).filter(
-            followers.c.follower_id == self.id).order_by(
-            Post.timestamp.desc())
+        return Post.query.join(  # Join post table with another table
+            followers, (followers.c.followed_id == Post.user_id)).filter(  # Join post table with followers where followed_id from followers table matches user_id from Post table
+            followers.c.follower_id == self.id).order_by(  # filter out the rows that do not have the current user
+            Post.timestamp.desc())  # order by date created
 
     def __repr__(self):
         return '<User {nickname}>'.format(nickname=self.nickname)
