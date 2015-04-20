@@ -1,16 +1,27 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from .forms import LoginForm, EditForm
-from .models import User
+from .forms import LoginForm, EditForm, PostForm
+from .models import User, Post
 from datetime import datetime
+from config import POSTS_PER_PAGE
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])  # get and post required to get submitted data
+@app.route('/index', methods=['GET', 'POST'])  # get and post required to get submitted data
+@app.route('/index/<int:page>', methods=['GET', 'POST'])  # takes a variable and declares it an interger
 @login_required  # Requires a login to view this page
-def index():
-    user = g.user  # assigns the user variable to the shared g.user object
+def index(page=1):  # assign a default value to page due to above routes not all provide a value
+    form = PostForm()  # create a form object
+    if form.validate_on_submit():  # check if form is valid
+        post = Post(body=form.post.data, timestamp=datetime.utcnow(), author=g.user)  # create a post object
+        db.session.add(post)  # add post object to db session
+        db.session.commit()  # commit session to the db
+        flash('Your post is now live!')
+        return redirect(url_for('index'))  # keeps a refresh action from taking place and cause a dup post object
+    #user = g.user  # assigns the user variable to the shared g.user object
     # user = {'nickname': 'JD'} # Fake User  # used during our testing
+    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False).items  # pull posts from the database
+    """
     posts = [ # Fake arrary of posts
               {
                   'author':{'nickname': 'John'},
@@ -25,6 +36,7 @@ def index():
                   'body': 'This is so friggin cool!'
               }
     ]
+    """
     return render_template('index.html',
                            title='Home',
                            user=user,

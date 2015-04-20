@@ -42,3 +42,8 @@ class EditForm(Form):  # this class details the form used for editing user profi
             return False
         return True
 
+
+class PostForm(Form):  # form for posts
+    post = StringField('post', validators=[DataRequired()])  # designates a string field that requires data
+
+

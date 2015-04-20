@@ -42,3 +42,7 @@ FILE_LOG_LOCATION = 'tmp/'
 FILE_LOG_NAME = 'microblog.log'
 
 FILE_LOG = os.path.join(FILE_LOG_LOCATION, FILE_LOG_NAME)  # Do not edit
+
+
+# pagination
+POSTS_PER_PAGE = 3
