@@ -20,7 +20,10 @@ def index(page=1):  # assign a default value to page due to above routes not all
         return redirect(url_for('index'))  # keeps a refresh action from taking place and cause a dup post object
     #user = g.user  # assigns the user variable to the shared g.user object
     # user = {'nickname': 'JD'} # Fake User  # used during our testing
-    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False).items  # pull posts from the database
+    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False)  # pull posts from the database.
+    """
+    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False).items keeps only the items from the object
+    """
     """
     posts = [ # Fake arrary of posts
               {
@@ -80,8 +83,17 @@ def after_login(resp):  # this is called after the login attempt. resp variable 
         db.session.add(user.follow(user))  # user is added to follow themselves
         db.session.commit()  # commit changes
     remember_me = False  # set remember_me value to false incase its not in the session
+    if not user.is_following(user):
+
+        """
+        checks to insure a user is following themselves. legacy support to implement change for displaying posts
+        """
+
+        db.session.add(user.follow(user))
+        db.session.commit()
     if 'remember_me' in session:  # load the remember me value from the session
-        remember_me = session['remember_me']  # load value
+        remember_me =\
+        session['remember_me']  # load value
         session.pop('remember_me', None)
     login_user(user, remember=remember_me)  # register the login as valid
     return redirect(request.args.get('next') or url_for('index'))  # return to the page the user asked for or index
