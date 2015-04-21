@@ -46,3 +46,7 @@ FILE_LOG = os.path.join(FILE_LOG_LOCATION, FILE_LOG_NAME)  # Do not edit
 
 # pagination
 POSTS_PER_PAGE = 3
+
+# Full Text Search (whoosh)
+WHOOSH_BASE = os.path.join(basedir, 'search.db')
+MAX_SEARCH_RESULTS = 50

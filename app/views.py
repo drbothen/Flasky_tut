@@ -18,7 +18,7 @@ def index(page=1):  # assign a default value to page due to above routes not all
         db.session.commit()  # commit session to the db
         flash('Your post is now live!')
         return redirect(url_for('index'))  # keeps a refresh action from taking place and cause a dup post object
-    #user = g.user  # assigns the user variable to the shared g.user object
+    # user = g.user  # assigns the user variable to the shared g.user object
     # user = {'nickname': 'JD'} # Fake User  # used during our testing
     posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False)  # pull posts from the database.
     """
@@ -40,6 +40,7 @@ def index(page=1):  # assign a default value to page due to above routes not all
               }
     ]
     """
+    print Post.query.whoosh_search('post').all()
     return render_template('index.html',
                            title='Home',
                            form=form,
@@ -106,16 +107,20 @@ def logout():
 
 
 @app.route('/user/<nickname>')  # <nickname> is an argument
+@app.route('/user/<nickname>/<int:page>')
 @login_required
-def user(nickname):
+def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()  # Takes the <nickname> argument and performs a database query
     if user is None:  # Checks to See if the nickname actually exists
         flash('User {nickname} not found.'.format(nickname=nickname))  # shows an error if nickname does not exist
         return redirect(url_for('index'))  # redirects to the index page
+    posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
+    """
     posts = [  # Test Posts
         {'author': user, 'body': 'Test post #1'},
         {'author': user, 'body': 'Test post #1'}
     ]
+    """
     return render_template('user.html',  # Renders the user template
                            user=user,  # assigns our user variable to our user for use in our template
                            posts=posts)  # assigns our posts variable for use in our template

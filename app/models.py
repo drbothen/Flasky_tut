@@ -2,8 +2,15 @@
 This module defines our database and table relationships
 """
 
-from app import db  # imports our db (SQLAlchemy) object from our app (__init__)
+from app import db, app  # imports our db (SQLAlchemy) object from our app (__init__) also imports our app object
 from hashlib import md5
+
+import sys
+if sys.version_info >= (3, 0):
+    enable_search = False
+else:
+    enable_search = True
+    import flask_whooshalchemy as whooshalchemy
 
 
 # auxiliary tables
@@ -13,6 +20,7 @@ followers = db.Table('followers',  # defines our many to many relationship
                      )
 
 # models
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Creates a primary key, integer column named ID
@@ -108,6 +116,9 @@ class User(db.Model):
 
 
 class Post(db.Model):
+
+    __searchable__ = ['body']  # used by whoosh
+
     id = db.Column(db.Integer, primary_key=True)  # Creates a primary key, integer column named ID
     body = db.Column(db.String(140))  # Creates a column named body with type string, 140 char length
     timestamp = db.Column(db.DateTime)  # Creates a column named timestamp with type datetime
@@ -122,4 +133,6 @@ class Post(db.Model):
     defines a method for printing this object
     """
 
+if enable_search:  # checks to see if the enable search flag has been enabled
+    whooshalchemy.whoosh_index(app, Post)  # indexes the database on the fields we need
 

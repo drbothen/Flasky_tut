@@ -24,7 +24,18 @@
         </tr>
     </table>
     <hr>
-    {% for post in posts %}  <!-- loops through all the posts in posts -->
-        {% include 'post.html' %}
+    <!-- posts is a Paginate object -->
+    {% for post in posts.items %}  <!-- loops through all the posts in posts -->
+        {% include 'post.html' %}  <!-- style of posts that appear (import from template post.html) -->
     {% endfor %}  <!-- end of for loop -->
+    {% if posts.has_prev %}  <!-- if there are newer posts generate a link -->
+        <a href="{{ url_for('user', nickname=user.nickname, page=posts.prev_num) }}">&lt;&lt; Newer posts</a>  <!-- link to newer posts -->
+    {% else %}  <!-- else statement -->
+        &lt;&lt; Newer posts  <!-- if no newer posts generate no link -->
+    {% endif %} |  <!-- end if statement and a generate a separator line -->
+    {% if posts.has_next %}  <!-- if there are older posts generate a link -->
+        <a href="{{ url_for('user', nickname=user.nickname, page=posts.next_num) }}">Older posts &gt;&gt;</a>  <!-- link to older posts -->
+    {% else %}  <!-- else statement -->
+        Older posts &gt;&gt;  <!-- if no older posts generate no link -->
+    {% endif %}  <!-- end if statement -->
 {% endblock %}  <!-- end content block -->

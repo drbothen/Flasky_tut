@@ -23,7 +23,7 @@
     </form>
     <!-- posts is a Paginate object -->
     {% for post in posts.items %}  <!-- for loop to loop through all the posts past by the post variable. -->
-        <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p></div>  <!-- defines the style to display posts -->
+        {% include 'post.html' %}  <!-- defines the style to display posts (from post template) -->
     {% endfor %}  <!-- end for loop -->
     {% if posts.has_prev %}  <!-- if there are newer posts generate a link -->
         <a href="{{ url_for('index', page=posts.prev_num) }}">&lt;&lt; Newer posts</a>  <!-- link to newer posts -->
