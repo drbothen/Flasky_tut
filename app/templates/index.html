@@ -21,7 +21,18 @@
             </tr>
         </table>
     </form>
+    <!-- posts is a Paginate object -->
     {% for post in posts.items %}  <!-- for loop to loop through all the posts past by the post variable. -->
         <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p></div>  <!-- defines the style to display posts -->
     {% endfor %}  <!-- end for loop -->
+    {% if posts.has_prev %}  <!-- if there are newer posts generate a link -->
+        <a href="{{ url_for('index', page=posts.prev_num) }}">&lt;&lt; Newer posts</a>  <!-- link to newer posts -->
+    {% else %}  <!-- else statement -->
+        &lt;&lt; Newer posts  <!-- if no newer posts generate no link -->
+    {% endif %} |  <!-- end if statement and a generate a separator line -->
+    {% if posts.has_next %}  <!-- if there are older posts generate a link -->
+        <a href="{{ url_for('index', page=posts.next_num) }}">Older posts &gt;&gt;</a>  <!-- link to older posts -->
+    {% else %}  <!-- else statement -->
+        Older posts &gt;&gt;  <!-- if no older posts generate no link -->
+    {% endif %}  <!-- end if statement -->
 {% endblock %} <!-- end block section -->
