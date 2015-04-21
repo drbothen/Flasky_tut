@@ -62,7 +62,7 @@ def login():
                            form=form,
                            providers=app.config['OPENID_PROVIDERS'])
 
-
+# add a check to see if user is currently following following self. if not added self as following
 @oid.after_login  # Runs after a login
 def after_login(resp):  # this is called after the login attempt. resp variable contains the info returned by the oidp
     if resp.email is None or resp.email == "":  # this is for validation. we require a valid email
