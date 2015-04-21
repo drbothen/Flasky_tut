@@ -1,28 +1,27 @@
 {% extends "base.html" %}  <!-- designates that this is an extension of the base template 'base' -->
 {% block content %} <!-- tells the template where to insert this template with the base -->
-    <h1>Hi, {{ user.nickname }}!</h1>  <!-- displays username for the currently logged in user. This is assigned by
+    <h1>Hi, {{ g.user.nickname }}!</h1>  <!-- displays username for the currently logged in user. This is assigned by
      the g.user variable -->
     <form action="" method="post" name="post">  <!-- insert a new form field -->
-    {{ form.hidden_tag }} <!-- used for preventing crossed site scripting attacks -->
-    <table>  <!-- create a table -->
-        <tr>
-            <td>Say something:</td>
-            <td>{{ form.post(size=30, maxlength=140) }}</td>  <!-- field posts -->
-            <td>
-                {% for error in form.post.errors %}  <!-- displays errors (if there are any) -->
-                    <span style="color: red;">[{{ error }}]</span><br>  <!-- how to display them -->
-                {% endfor %}  <!-- end for loops -->
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><input type="submit" value="Post!"></td>
-            <td></td>
-        </tr>
-    </table>
+        {{ form.hidden_tag() }} <!-- used for CSRF prevention -->
+        <table>  <!-- create a table -->
+            <tr>
+                <td>Say something:</td>
+                <td>{{ form.post(size=30, maxlength=140) }}</td>  <!-- field posts -->
+                <td>
+                    {% for error in form.post.errors %}  <!-- displays errors (if there are any) -->
+                        <span style="color: red;">[{{ error }}]</span><br>  <!-- how to display them -->
+                    {% endfor %}  <!-- end for loops -->
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Post!"></td>
+                <td></td>
+            </tr>
+        </table>
     </form>
-    {% for post in posts %}  <!-- for loop to loop through all the posts past by the post variable. -->
-    <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p></div>  <!-- defines the style to display posts
-     -->
+    {% for post in posts.items %}  <!-- for loop to loop through all the posts past by the post variable. -->
+        <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p></div>  <!-- defines the style to display posts -->
     {% endfor %}  <!-- end for loop -->
 {% endblock %} <!-- end block section -->

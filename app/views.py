@@ -39,7 +39,7 @@ def index(page=1):  # assign a default value to page due to above routes not all
     """
     return render_template('index.html',
                            title='Home',
-                           user=user,
+                           form=form,
                            posts=posts)
 
 
