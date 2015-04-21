@@ -14,7 +14,7 @@ procs - cores to use in parallel
 """
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-atatime = 512
+atatime = 512  # how many rows to load at a time
 
 with app.app_context():
     index = whoosh_index(app, Model)  # Create a Whoosh index object
@@ -25,12 +25,12 @@ with app.app_context():
     print 'total rows: {}'.format(total)
     writer = index.writer(limitmb=10000, procs=16, multisegment=True)  # Create the writer object
     for p in Model.query.yield_per(atatime):  # to batch results in sub-collections and yield them out partially (Save memory)
-        record = dict([(s, p.__dict__[s]) for s in searchable])
+        record = dict([(s, p.__dict__[s]) for s in searchable])  # create a dictionary of of the fields we are indexing with whoosh form the table
         record.update({'id': unicode(p.id)})  # id is mandatory, or whoosh won't work
-        writer.add_document(**record)
+        writer.add_document(**record)  # write record to index database
         done += 1  # update done variable
         if done % atatime == 0:
-            print 'c {}/{} ({}%)'.format(done, total, round((float(done)/total)*100, 2)),
+            print 'c {}/{} ({}%)'.format(done, total, round((float(done)/total)*100, 2)),  # calculate percentage complete
 
-    print '{}/{} ({}%)'.format(done, total, round((float(done)/total)*100, 2))
-    writer.commit()
+    print '{}/{} ({}%)'.format(done, total, round((float(done)/total)*100, 2))  # print completion
+    writer.commit()  # commit data to database
