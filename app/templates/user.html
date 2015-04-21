@@ -11,7 +11,7 @@
                 so displays the field -->
                 {% if user.last_seen %}<p><i>Last seen on: {{ user.last_seen }}</i></p>{% endif %}  <!-- checks to see
                 if last_seen is set. if so displays the field -->
-                <p>{{ user.followers.count() }} followers |  <!-- Count followers -->
+                <p>{{ user.followers.count() - 1 }} followers |  <!-- Count followers -->
                 {% if user.id == g.user.id %}  <!-- if user is logged in user -->
                     <a href="{{ url_for('edit') }}">Edit your profile</a>  <!-- display edit button -->
                 {% elif not g.user.is_following(user) %}  <!-- checks if user is following the user -->
