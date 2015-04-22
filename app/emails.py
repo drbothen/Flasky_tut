@@ -3,10 +3,11 @@ from flask_mail import Message
 from flask import render_template
 from app import mail
 from config import ADMINS
-from threading import Thread
 from app import app
+from .decorators import async
 
 
+@async  # pulls threading code from decorators
 def send_async_email(app, msg):
     with app.app_context():  # (beceause it is a seperate thread) sets up the application context manually because it is threaded (required by flask_mail)
         mail.send(msg)  # sends our message object
@@ -16,8 +17,7 @@ def send_email(subject, sender, recipients, text_body, html_body):  # this funct
     msg = Message(subject, sender=sender, recipients=recipients)  # creates a message object
     msg.body = text_body  # creates our text version of our email
     msg.html = html_body  # creates our html version of our email
-    thr = Thread(target=send_async_email, args=[app, msg])  # Creates a thread
-    thr.start()  # starts thread
+    send_async_email(app, msg)
 
 
 def follower_notification(followed, follower):  # sets up sending the email
