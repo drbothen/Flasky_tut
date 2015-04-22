@@ -47,3 +47,7 @@ class PostForm(Form):  # form for posts
     post = StringField('post', validators=[DataRequired()])  # designates a string field that requires data
 
 
+class SearchForm(Form):
+    search = StringField('search', validators=[DataRequired()])
+
+

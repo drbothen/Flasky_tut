@@ -1,10 +1,10 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from .forms import LoginForm, EditForm, PostForm
+from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .models import User, Post
 from datetime import datetime
-from config import POSTS_PER_PAGE
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 
 @app.route('/', methods=['GET', 'POST'])  # get and post required to get submitted data
 @app.route('/index', methods=['GET', 'POST'])  # get and post required to get submitted data
@@ -162,10 +162,11 @@ def load_user(id):  # this function is registered with the lm using the decorato
 @app.before_request  # this will cause this function to run before the view func each time a request is received
 def before_request():
     g.user = current_user  # this allows all requests to have access to the logged in user. g is shared between requests
-    if g.user.is_authenticated():
-        g.user.last_seen = datetime.utcnow()
-        db.session.add(g.user)
-        db.session.commit()
+    if g.user.is_authenticated():  # Check if user is authenticated
+        g.user.last_seen = datetime.utcnow()  # if so set user last seen variable
+        db.session.add(g.user)  # add data to session
+        db.session.commit()  # commit session to database
+        g.search_form = SearchForm()  # assign g.search_form our search form FORM
 
 
 @app.route('/follow/<nickname>')
@@ -205,3 +206,22 @@ def unfollow(nickname):
     db.session.commit() # commit session
     flash('You have stopped following {nickname}.'.format(nickname=nickname))  # confirmation message
     return redirect(url_for('user', nickname=nickname))  # redirect to user page
+
+@app.route('/search', methods=['POST'])  # only allow POST actions
+@login_required  # require authentication to view
+def search():
+    if not g.search_form.validate_on_submit():  # checks if data is available. if not
+        return redirect(url_for('index'))  # redirect to index page
+    return redirect(url_for('search_results', query=g.search_form.search.data))  # if so, redirect to search results. we use redirects to avoid the browser warning data will be resubmitted
+
+
+@app.route('/search_results/<query>')  # <query> is populated from the search() view
+@login_required  # requires authenticated user
+def search_results(query):
+    results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()  # query the search database
+    return render_template('search_results.html',  # render the results
+                           query=query,
+                           results=results)
+
+
+

@@ -15,6 +15,10 @@
             button -->
             | <a href="{{ url_for('user', nickname=g.user.nickname) }}">Your Profile</a>  <!-- this is displayed if the
              is user is logged in. This links to their profile page -->
+            | <form style="display: inline;" action="{{ url_for('search') }}" method="post" name="search">  <!-- create / import our search form. Send all search requests to the search view -->
+                    {{ g.search_form.hidden_tag() }}  <!-- CSRF Protection -->
+                    {{ g.search_form.search(size=20) }} <input type="submit" value="search">  <!-- Creates a button -->
+              </form>
             | <a href="{{ url_for('logout') }}">Logout</a>  <!-- this is displayed if the user is logged in. the button
              if rendered and the url_for calls the logout route in views that runs a function to log the user out-->
             {% endif %}  <!-- end if -->
