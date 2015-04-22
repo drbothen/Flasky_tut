@@ -1,0 +1,13 @@
+<p>Dear {{ user.nickname }},</p>  <!-- pulls the users name for the email -->
+<p><a href="{{ url_for('user', nickname=follower.nickname, _external=True) }}">{{ follower.nickname }}</a> is now a follower.</p>  <!-- creates a links named the name of the new follower -->
+<table>
+    <tr valign="top">
+        <td><img src="{{ follower.avatar(50) }}"></td>  <!-- pulls the followers avatar -->
+        <td>
+            <a href="{{ url_for('user', nickname=follower.nickname, _external=True) }}">{{ follower.nickname }}</a><br>  <!-- Creates a link with name = new follower nickname below avatar -->
+            {{ follower.about_me }}  <!-- pulls the new followers about me info -->
+        </td>
+    </tr>
+</table>
+<p>Regards,</p>
+<p>The <code>microblog</code> admin</p>

@@ -1,13 +1,15 @@
-from flask import Flask, current_app
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_login import LoginManager
 from flask_openid import OpenID
+from flask_mail import Mail  # used to support email
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, FILE_LOG  # import config.py
 
 app = Flask(__name__)  # creates an instance of flask named app. not be confused with the app dir
 app.config.from_object('config')  # tells flask what the name of our config file is/where it is
 db = SQLAlchemy(app)  # Creates a SQLAlchemy Database object
+mail = Mail(app)  # Creates a Mail object
 lm = LoginManager()  # Create a loginmanager instance
 lm.init_app(app)  # initialize with the name of our flask app
 lm.login_view = 'login'  # tells flask login manager where our login page is

@@ -4,6 +4,6 @@
 {% block content %}  <!-- where to be inserted in base -->
     <h1>Search results for "{{ query }}":</h1>
     {% for post in results %}  <!-- for loop to loop through all the results -->
-        {% include 'post.html' %}  <!-- include post.html for displaying posts -->
+        {% include 'post.html' %}  <!-- include post.html for displaying posts (This is a sub template) -->
     {% endfor %}  <!-- end for loop -->
 {% endblock %}  <!-- end content block -->

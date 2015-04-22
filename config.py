@@ -28,10 +28,18 @@ SQLALCHEMY_DATABASE_URI = database_type + os.path.join(basedir, database_name)  
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, db_migrate_repo)  # Sets the location of the migrate repo
 
 # mail server settings
-MAIL_SERVER = 'localhost'
-MAIL_PORT = 8089
-MAIL_USERNAME = None
-MAIL_PASSWORD = None
+MAIL_SERVER = 'smtp.googlemail.com'
+MAIL_PORT = 465
+MAIL_USERNAME = 'josh.magady@gmail.com'
+MAIL_PASSWORD = '867R2d2C3p0'
+#MAIL_SERVER = 'localhost'
+#MAIL_PORT = 8089
+#MAIL_USERNAME = None
+#MAIL_PASSWORD = None
+# MAIL_USERNAME = os.environ.get('MAIL_USERNAME')  # it is safer to store sensitive information in environment variables
+# MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+MAIL_USE_TLS = False
+MAIL_USE_SSL = True
 
 # administrators list
 ADMINS = ['you@example.com']
